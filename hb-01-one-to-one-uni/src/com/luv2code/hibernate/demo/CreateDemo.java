@@ -1,47 +1,43 @@
 package com.luv2code.hibernate.demo;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import com.luv2code.hibernate.demo.entity.Student;
+import com.luv2code.hibernate.demo.entity.Instructor;
+import com.luv2code.hibernate.demo.entity.InstructorDetail;
 
-public class CreateStudentDemo {
+public class CreateDemo {
 
 	public static void main(String[] args) throws ParseException {
 
 		// create session factory
 		SessionFactory factory = new Configuration()
 				.configure("hibernate.cfg.xml")
-				.addAnnotatedClass(Student.class)
+				.addAnnotatedClass(Instructor.class)
+				.addAnnotatedClass(InstructorDetail.class)
 				.buildSessionFactory();
 		
 		// create session
 		Session session =  factory.getCurrentSession();
 
 		try {
-			// create the student object
-			System.out.println("Creating new student object...");
 			
-			Date theDateOfBirth = DateUtils.parseDate("31/12/1990");
+			Instructor tempInstructor = new Instructor("John", "Doe", "doe@luv2code.com");
 			
-			Student tempStudent = new Student("John", "Wall", "john@luv2code.com", theDateOfBirth);
+			InstructorDetail tempInstructorDetails = new InstructorDetail("www.luv2code.com", "Luv 2 code!!");
 			
-			// start a transaction
+			tempInstructor.setInstructorDetail(tempInstructorDetails);
+			
 			session.beginTransaction();
 			
-			// save the student object
-			System.out.println("Saving the student...");
-			session.save(tempStudent);
-						
+			// This will ALSO save the details object because of CascadeType.ALL
+			session.save(tempInstructor);
+			
 			// commit the transaction
 			session.getTransaction().commit();
 			
-			System.out.println("Done!");
 		} finally {
 			factory.close();
 		}
